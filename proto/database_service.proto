@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package mylib;
+
+// Service for database operations
+service DatabaseService {
+    // Query users from the database
+    rpc QueryUsers(QueryUsersRequest) returns (QueryUsersResponse);
+    
+    // Get a user by ID
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+    
+    // Add a new user
+    rpc AddUser(AddUserRequest) returns (AddUserResponse);
+}
+
+// Request to query all users
+message QueryUsersRequest {
+    int32 limit = 1;
+    int32 offset = 2;
+}
+
+// Response containing list of users
+message QueryUsersResponse {
+    repeated User users = 1;
+    int32 total_count = 2;
+}
+
+// Request to get a specific user
+message GetUserRequest {
+    int32 user_id = 1;
+}
+
+// Response containing a single user
+message GetUserResponse {
+    User user = 1;
+    bool found = 2;
+}
+
+// Request to add a new user
+message AddUserRequest {
+    string name = 1;
+    string email = 2;
+}
+
+// Response after adding a user
+message AddUserResponse {
+    int32 user_id = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+// User data model
+message User {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
