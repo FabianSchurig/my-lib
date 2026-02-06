@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package mylib;
+
+service DatabaseService {
+    rpc QueryUsers(QueryUsersRequest) returns (QueryUsersResponse);
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+    rpc AddUser(AddUserRequest) returns (AddUserResponse);
+}
+
+message QueryUsersRequest {
+    int32 limit = 1;
+    int32 offset = 2;
+}
+
+message QueryUsersResponse {
+    repeated User users = 1;
+}
+
+message GetUserRequest {
+    int32 user_id = 1;
+}
+
+message GetUserResponse {
+    User user = 1;
+    bool found = 2;
+}
+
+message AddUserRequest {
+    string name = 1;
+    string email = 2;
+}
+
+message AddUserResponse {
+    int32 user_id = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+message User {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
