@@ -1,0 +1,75 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, copilot/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential cmake ninja-build \
+          libssl-dev zlib1g-dev libpq-dev \
+          pkg-config autoconf automake libtool
+    
+    - name: Install Protocol Buffers
+      run: |
+        wget -q https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protobuf-cpp-3.21.12.tar.gz
+        tar xf protobuf-cpp-3.21.12.tar.gz
+        cd protobuf-3.21.12
+        ./configure --prefix=/usr/local
+        make -j$(nproc)
+        sudo make install
+        sudo ldconfig
+    
+    - name: Install gRPC
+      run: |
+        git clone --recurse-submodules -b v1.54.0 --depth 1 https://github.com/grpc/grpc
+        cd grpc
+        mkdir -p cmake/build && cd cmake/build
+        cmake -GNinja \
+          -DgRPC_INSTALL=ON \
+          -DgRPC_BUILD_TESTS=OFF \
+          -DCMAKE_INSTALL_PREFIX=/usr/local \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DgRPC_SSL_PROVIDER=package \
+          ../..
+        ninja
+        sudo ninja install
+        sudo ldconfig
+    
+    - name: Install libpqxx
+      run: |
+        git clone https://github.com/jtv/libpqxx.git
+        cd libpqxx
+        git checkout 7.7.5
+        mkdir build && cd build
+        cmake -GNinja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=/usr/local \
+          -DBUILD_SHARED_LIBS=ON \
+          ..
+        ninja
+        sudo ninja install
+        sudo ldconfig
+    
+    - name: Configure
+      run: cmake -B build -GNinja
+    
+    - name: Build
+      run: cmake --build build
+    
+    - name: Upload library
+      uses: actions/upload-artifact@v4
+      with:
+        name: mylib-ubuntu-22.04
+        path: build/libmylib.so*

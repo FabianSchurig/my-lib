@@ -1,5 +1,8 @@
 # mylib - C++20 Library for gRPC and PostgreSQL
 
+[![Build](https://github.com/FabianSchurig/my-lib/actions/workflows/build.yml/badge.svg)](https://github.com/FabianSchurig/my-lib/actions/workflows/build.yml)
+[![Yocto Build](https://github.com/FabianSchurig/my-lib/actions/workflows/yocto.yml/badge.svg)](https://github.com/FabianSchurig/my-lib/actions/workflows/yocto.yml)
+
 A minimal C++20 library providing database and gRPC utilities for PostgreSQL operations.
 
 ## Features
@@ -65,6 +68,13 @@ Copy `yocto/mylib_1.0.0.bb` to your layer and add to your image:
 ```bitbake
 IMAGE_INSTALL:append = " mylib"
 ```
+
+Pre-built Yocto packages are available in [GitHub Container Registry](https://github.com/FabianSchurig/my-lib/pkgs/container/my-lib).
+
+## CI/CD
+
+- **Build workflow**: Builds library on Ubuntu 22.04, uploads artifacts
+- **Yocto workflow**: Builds with Yocto/Kirkstone, publishes to GitHub Container Registry
 
 ## Project Structure
 
